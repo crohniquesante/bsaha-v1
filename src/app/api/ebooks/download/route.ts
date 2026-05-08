@@ -16,6 +16,10 @@ export async function POST(request: Request) {
     .eq("id", ebookId)
     .single();
 
+  if (!ebook) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   const signed = await supabase.storage
     .from("ebooks")
     .createSignedUrl(ebook.storage_path, 60 * 60);
