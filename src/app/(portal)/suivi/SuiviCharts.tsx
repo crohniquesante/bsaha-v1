@@ -1,5 +1,6 @@
 "use client";
 
+import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import {
   Bar,
   CartesianGrid,
@@ -36,7 +37,7 @@ export function SuiviCharts({ data }: { data: ChartRow[] }) {
               <CartesianGrid strokeDasharray="3 3" stroke="#e8e6e1" />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} interval="preserveStartEnd" />
               <YAxis domain={[0, 5]} allowDecimals={false} width={28} />
-              <Tooltip formatter={(v: number | undefined) => [v ?? "—", "Douleur"]} />
+              <Tooltip formatter={(v: ValueType) => [v ?? "—", "Douleur"]} />
               <Line type="monotone" dataKey="pain" stroke={sage} strokeWidth={2} dot={{ r: 3 }} connectNulls />
             </LineChart>
           </ResponsiveContainer>
