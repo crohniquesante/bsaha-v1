@@ -1,0 +1,13 @@
+{
+  "framework": "nextjs",
+  "crons": [
+    {
+      "path": "/api/cron/live-reminders",
+      "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/daily-log-reminders",
+      "schedule": "30 17 * * *"
+    }
+  ]
+}
