@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/cron/live-reminders",
-      "schedule": "*/10 * * * *"
+      "schedule": "0 9 * * *"
     },
     {
       "path": "/api/cron/daily-log-reminders",

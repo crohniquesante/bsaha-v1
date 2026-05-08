@@ -79,7 +79,7 @@ Base SaaS Next.js 14 pour le programme Bsaha.
   - Fenetre envoi : live dans **55–65 min** selon UTC
   - Destinataires : membres avec `access_active = true` et `consent_signed_at` renseigne
   - Dedoublonnage table `live_reminders`
-  - **Vercel** : declarer `CRON_SECRET` dans les variables d environnement projet ; cron defini dans `vercel.json` (toutes les 10 minutes)
+  - **Vercel** : declarer `CRON_SECRET` dans les variables d environnement projet ; cron defini dans `vercel.json` pour les rappels live : **1 fois par jour a 9:00 UTC** (`0 9 * * *`, compatible plan gratuit). La route ne regarde qu une fenetre courte autour de cette heure ; pour des lives a d autres moments, elargir la fenetre dans le code ou ajuster l heure du cron.
 
 Tests : `tests/live-reminders.test.ts`.
 
