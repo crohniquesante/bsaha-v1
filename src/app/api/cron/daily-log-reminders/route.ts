@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const todayParis = calendarDateParis();
+  const todayParis = calendarDateParis(Date.now());
   const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
 
   const { data: members } = await supabaseAdmin
