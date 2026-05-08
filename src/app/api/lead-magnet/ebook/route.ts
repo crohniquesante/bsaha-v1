@@ -1,23 +1,26 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { env } from "@/lib/env";
 import { log } from "@/lib/logger";
-import { resend } from "@/lib/resend";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 
 const bodySchema = z.object({
   email: z.string().trim().email().max(254)
 });
 
-function resolvePdfLocation(): { bucket: string; path: string } | null {
-  const bucket = env.LEAD_MAGNET_EBOOK_BUCKET ?? "ebooks";
-  let path = env.LEAD_MAGNET_EBOOK_PATH?.trim();
-  if (path) return { bucket, path };
-
-  return null;
-}
-
 export async function POST(request: Request) {
+  const [{ env }, { supabaseAdmin }, { resend }] = await Promise.all([
+    import("@/lib/env"),
+    import("@/lib/supabase/admin"),
+    import("@/lib/resend")
+  ]);
+
+  function resolvePdfLocation(): { bucket: string; path: string } | null {
+    const bucket = env.LEAD_MAGNET_EBOOK_BUCKET ?? "ebooks";
+    let path = env.LEAD_MAGNET_EBOOK_PATH?.trim();
+    if (path) return { bucket, path };
+
+    return null;
+  }
+
   const host = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   const formData = await request.formData();
   const parsed = bodySchema.safeParse({ email: formData.get("email") });

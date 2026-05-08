@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
-import { env } from "@/lib/env";
 import { log } from "@/lib/logger";
-import { resend } from "@/lib/resend";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 import { reminderWindowUtcIso } from "@/server/live-reminders";
 
 export async function GET(request: Request) {
+  const [{ env }, { supabaseAdmin }, { resend }] = await Promise.all([
+    import("@/lib/env"),
+    import("@/lib/supabase/admin"),
+    import("@/lib/resend")
+  ]);
+
   const secret = env.CRON_SECRET;
   if (!secret) {
     return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 503 });

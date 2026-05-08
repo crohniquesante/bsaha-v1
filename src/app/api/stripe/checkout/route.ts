@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
-import { env } from "@/lib/env";
-import { stripe } from "@/lib/stripe";
 
 export async function POST(request: Request) {
+  const [{ env }, { stripe }] = await Promise.all([
+    import("@/lib/env"),
+    import("@/lib/stripe")
+  ]);
   const contentType = request.headers.get("content-type") ?? "";
   let mode: "installment" | "one_time" = "one_time";
   if (contentType.includes("application/json")) {

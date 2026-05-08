@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { log } from "@/lib/logger";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { projectionWriteSchema } from "@/server/validators";
 
 const MAX_PROJECTIONS = 5;
 
 export async function POST(request: Request) {
+  const { createSupabaseServerClient } = await import("@/lib/supabase/server");
   const supabase = await createSupabaseServerClient();
   const {
     data: { user }

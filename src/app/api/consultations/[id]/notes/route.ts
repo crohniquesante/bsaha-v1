@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
-import { getSessionUserWithRole } from "@/server/authorization";
 
 type Props = { params: { id: string } };
 
 export async function GET(request: Request, { params }: Props) {
+  const [{ supabaseAdmin }, { getSessionUserWithRole }] = await Promise.all([
+    import("@/lib/supabase/admin"),
+    import("@/server/authorization")
+  ]);
   const { user, isAdmin } = await getSessionUserWithRole();
   if (!user) return NextResponse.redirect(new URL("/connexion", request.url));
 

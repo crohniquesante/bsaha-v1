@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { log } from "@/lib/logger";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { computeVideoComplete } from "@/server/rules";
 import { videoProgressSchema } from "@/server/validators";
 
 export async function POST(request: Request) {
+  const { createSupabaseServerClient } = await import("@/lib/supabase/server");
   const supabase = await createSupabaseServerClient();
   const {
     data: { user }

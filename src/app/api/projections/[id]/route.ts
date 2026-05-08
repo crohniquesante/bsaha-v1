@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { log } from "@/lib/logger";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { projectionWriteSchema } from "@/server/validators";
 
 type Props = { params: { id: string } };
 
 export async function POST(request: Request, { params }: Props) {
+  const { createSupabaseServerClient } = await import("@/lib/supabase/server");
   const supabase = await createSupabaseServerClient();
   const {
     data: { user }
