@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { CookieOptions, createServerClient } from "@supabase/ssr";
 
 const protectedPaths = [
   "/dashboard",
