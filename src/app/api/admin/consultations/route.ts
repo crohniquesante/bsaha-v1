@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { log } from "@/lib/logger";
-import { supabaseAdmin } from "@/lib/supabase/admin";
-import { getSessionUserWithRole } from "@/server/authorization";
 import { adminConsultationSchema } from "@/server/validators";
 
 export async function POST(request: Request) {
+  const [{ supabaseAdmin }, { getSessionUserWithRole }] = await Promise.all([
+    import("@/lib/supabase/admin"),
+    import("@/server/authorization")
+  ]);
   const { user, isAdmin } = await getSessionUserWithRole();
   if (!user || !isAdmin) return NextResponse.redirect(new URL("/dashboard", request.url));
 

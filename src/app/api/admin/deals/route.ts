@@ -1,20 +1,23 @@
 import { NextResponse } from "next/server";
 import { log } from "@/lib/logger";
-import { supabaseAdmin } from "@/lib/supabase/admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { adminDealSchema } from "@/server/validators";
 
-async function ensureAdmin() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data } = await supabase.from("users").select("is_admin").eq("id", user.id).single();
-  return data?.is_admin ? user : null;
-}
-
 export async function POST(request: Request) {
+  const [{ supabaseAdmin }, { createSupabaseServerClient }] = await Promise.all([
+    import("@/lib/supabase/admin"),
+    import("@/lib/supabase/server")
+  ]);
+
+  async function ensureAdmin() {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+    if (!user) return null;
+    const { data } = await supabase.from("users").select("is_admin").eq("id", user.id).single();
+    return data?.is_admin ? user : null;
+  }
+
   const admin = await ensureAdmin();
   if (!admin) return NextResponse.redirect(new URL("/dashboard", request.url));
 
