@@ -10,7 +10,9 @@ export async function POST(request: Request) {
   const {
     data: { user }
   } = await supabase.auth.getUser();
-  if (!user) return NextResponse.redirect(new URL("/connexion", request.url));
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const formData = await request.formData();
   const parsed = projectionWriteSchema.safeParse({
@@ -19,7 +21,10 @@ export async function POST(request: Request) {
   });
   if (!parsed.success) {
     log("warn", "projection_validation_failed", { errors: parsed.error.flatten() });
-    return NextResponse.redirect(new URL("/objectifs?error=validation", request.url));
+    return NextResponse.json(
+      { error: "Validation failed", details: parsed.error.flatten() },
+      { status: 400 }
+    );
   }
 
   const { count, error: countError } = await supabase
@@ -29,11 +34,23 @@ export async function POST(request: Request) {
 
   if (countError) {
     log("error", "projection_count_failed", { reason: countError.message });
-    return NextResponse.redirect(new URL("/objectifs?error=server", request.url));
+    return NextResponse.json(
+      {
+        error: "projection_count_failed",
+        message: countError.message,
+        code: countError.code,
+        details: countError.details,
+        hint: countError.hint
+      },
+      { status: 500 }
+    );
   }
 
   if ((count ?? 0) >= MAX_PROJECTIONS) {
-    return NextResponse.redirect(new URL("/objectifs?error=limit", request.url));
+    return NextResponse.json(
+      { error: "Projection limit reached", limit: MAX_PROJECTIONS },
+      { status: 409 }
+    );
   }
 
   const { error } = await supabase.from("projections").insert({
@@ -43,7 +60,16 @@ export async function POST(request: Request) {
   });
   if (error) {
     log("warn", "projection_insert_failed", { reason: error.message });
-    return NextResponse.redirect(new URL("/objectifs?error=server", request.url));
+    return NextResponse.json(
+      {
+        error: "projection_insert_failed",
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      },
+      { status: 500 }
+    );
   }
 
   log("info", "projection_created", { userId: user.id });
