@@ -5,7 +5,10 @@ import { projectionWriteSchema } from "@/server/validators";
 const MAX_PROJECTIONS = 5;
 
 export async function POST(request: Request) {
-  const { createSupabaseServerClient } = await import("@/lib/supabase/server");
+  const [{ createSupabaseServerClient }, { supabaseAdmin }] = await Promise.all([
+    import("@/lib/supabase/server"),
+    import("@/lib/supabase/admin")
+  ]);
   const supabase = await createSupabaseServerClient();
   const {
     data: { user }
@@ -27,7 +30,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { count, error: countError } = await supabase
+  const { count, error: countError } = await supabaseAdmin
     .from("projections")
     .select("*", { count: "exact", head: true })
     .eq("user_id", user.id);
