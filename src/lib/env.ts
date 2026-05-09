@@ -25,10 +25,23 @@ const envSchema = z.object({
   LEAD_MAGNET_EBOOK_PATH: z.string().min(1).optional()
 });
 
-const parsed = envSchema.safeParse(process.env);
+export type Env = z.infer<typeof envSchema>;
 
-if (!parsed.success) {
-  throw new Error(`Invalid env configuration: ${parsed.error.message}`);
+let cachedEnv: Env | null = null;
+
+function readEnv(): Env {
+  if (cachedEnv !== null) return cachedEnv;
+  const parsed = envSchema.safeParse(process.env);
+  if (!parsed.success) {
+    throw new Error(`Invalid env configuration: ${parsed.error.message}`);
+  }
+  cachedEnv = parsed.data;
+  return cachedEnv;
 }
 
-export const env = parsed.data;
+export const env = new Proxy({} as Env, {
+  get(_target, prop: string | symbol) {
+    if (typeof prop !== "string") return undefined;
+    return readEnv()[prop as keyof Env];
+  }
+}) as Env;
